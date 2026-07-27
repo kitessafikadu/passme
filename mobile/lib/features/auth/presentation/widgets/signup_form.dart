@@ -22,6 +22,15 @@ class _SignUpFormState extends State<SignUpForm> {
   final confirmPasswordController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    // Reset any stale success/failure state from a previous signup attempt
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SignUpBloc>().add(const SignUpReset());
+    });
+  }
+
+  @override
   void dispose() {
     usernameController.dispose();
     emailController.dispose();
@@ -58,6 +67,7 @@ class _SignUpFormState extends State<SignUpForm> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<SignUpBloc, SignUpState>(
+      listenWhen: (previous, current) => current != previous,
       listener: (context, state) {
         if (state is SignUpFailure) {
           ScaffoldMessenger.of(context).showSnackBar(

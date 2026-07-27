@@ -23,6 +23,10 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _loadRememberedEmail();
+    // Reset any stale loading/error state left over from a previous session
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<LoginCubit>().reset();
+    });
   }
 
   Future<void> _loadRememberedEmail() async {
@@ -84,6 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
                 child: BlocListener<LoginCubit, LoginState>(
+                  listenWhen: (previous, current) => current != previous,
                   listener: (context, state) async {
                     if (state.token != null) {
                       // Always save the token

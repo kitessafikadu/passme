@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mobile/core/service/local_storage_service.dart';
@@ -84,17 +85,21 @@ class ApiClient {
         Uri.parse('$baseUrl$endpoint'),
         headers: headers,
         body: jsonEncode(body),
-      );
+      ).timeout(const Duration(seconds: 30));
 
       await _logResponse(response);
       return _handleResponse(response);
     } on ApiException {
       rethrow;
-    } catch (e) {
-      throw ApiException(
-        statusCode: 500,
-        message: 'Network error: ${e.toString()}',
-      );
+    } on Exception catch (e) {
+      final msg = e.toString();
+      if (msg.contains('TimeoutException') || msg.contains('timed out')) {
+        throw ApiException(
+          statusCode: 503,
+          message: 'Server is taking too long to respond. It may be starting up — please try again in a moment.',
+        );
+      }
+      throw ApiException(statusCode: 500, message: 'Network error: $msg');
     }
   }
 
@@ -120,17 +125,21 @@ class ApiClient {
       final response = await _client.get(
         uri,
         headers: headers,
-      );
+      ).timeout(const Duration(seconds: 30));
 
       await _logResponse(response);
       return _handleResponse(response);
     } on ApiException {
       rethrow;
-    } catch (e) {
-      throw ApiException(
-        statusCode: 500,
-        message: 'Network error: ${e.toString()}',
-      );
+    } on Exception catch (e) {
+      final msg = e.toString();
+      if (msg.contains('TimeoutException') || msg.contains('timed out')) {
+        throw ApiException(
+          statusCode: 503,
+          message: 'Server is taking too long to respond. It may be starting up — please try again in a moment.',
+        );
+      }
+      throw ApiException(statusCode: 500, message: 'Network error: $msg');
     }
   }
 
@@ -153,17 +162,21 @@ class ApiClient {
         Uri.parse('$baseUrl$endpoint'),
         headers: headers,
         body: jsonEncode(body),
-      );
+      ).timeout(const Duration(seconds: 30));
 
       await _logResponse(response);
       return _handleResponse(response);
     } on ApiException {
       rethrow;
-    } catch (e) {
-      throw ApiException(
-        statusCode: 500,
-        message: 'Network error: ${e.toString()}',
-      );
+    } on Exception catch (e) {
+      final msg = e.toString();
+      if (msg.contains('TimeoutException') || msg.contains('timed out')) {
+        throw ApiException(
+          statusCode: 503,
+          message: 'Server is taking too long to respond. It may be starting up — please try again in a moment.',
+        );
+      }
+      throw ApiException(statusCode: 500, message: 'Network error: $msg');
     }
   }
 
@@ -183,28 +196,36 @@ class ApiClient {
       final response = await _client.delete(
         Uri.parse('$baseUrl$endpoint'),
         headers: headers,
-      );
+      ).timeout(const Duration(seconds: 30));
 
       await _logResponse(response);
       return _handleResponse(response);
     } on ApiException {
       rethrow;
-    } catch (e) {
-      throw ApiException(
-        statusCode: 500,
-        message: 'Network error: ${e.toString()}',
-      );
+    } on Exception catch (e) {
+      final msg = e.toString();
+      if (msg.contains('TimeoutException') || msg.contains('timed out')) {
+        throw ApiException(
+          statusCode: 503,
+          message: 'Server is taking too long to respond. It may be starting up — please try again in a moment.',
+        );
+      }
+      throw ApiException(statusCode: 500, message: 'Network error: $msg');
     }
   }
 
   // CHANGED: Return type is now dynamic, supports both Map and List
   dynamic _handleResponse(http.Response response) {
     try {
-      // Handle empty response body
-      if (response.body.isEmpty) {
+      // Handle empty response body for any status code
+      if (response.body.trim().isEmpty) {
         if (response.statusCode >= 200 && response.statusCode < 300) {
-          return null; // Return null for empty successful responses
+          return null;
         }
+        throw ApiException(
+          statusCode: response.statusCode,
+          message: 'Request failed with status ${response.statusCode}',
+        );
       }
 
       final decoded = jsonDecode(utf8.decode(response.bodyBytes));
@@ -240,9 +261,19 @@ class ApiClient {
         );
       }
     } on FormatException catch (e) {
+      // Log the raw body to help diagnose unexpected responses (e.g. HTML from a cold-starting server)
+      if (_debugMode) {
+        print('=== Parse Error ===');
+        print('Raw body: ${response.body}');
+        print('==================');
+      }
+      // If the body looks like HTML (cold start / proxy error page), give a clearer message
+      final isHtml = response.body.trim().startsWith('<');
       throw ApiException(
         statusCode: response.statusCode,
-        message: 'Invalid response format: ${e.message}',
+        message: isHtml
+            ? 'Server is starting up, please try again'
+            : 'Invalid response format: ${e.message}',
         response: response.body,
       );
     }

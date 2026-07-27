@@ -10,37 +10,28 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<Map<String, dynamic>> login(String email, String password) async {
-    try {
-      final response = await _apiClient.post(
-        '/login',
-        {
-          'email': email,
-          'password': password,
-        },
-        requiresAuth: false,
-      );
+    final response = await _apiClient.post(
+      '/login',
+      {'email': email, 'password': password},
+      requiresAuth: false,
+    );
 
-      final token = response['token'] as String;
-      final userData = response['user'] as Map<String, dynamic>;
+    final token = response['token'] as String;
+    final userData = response['user'] as Map<String, dynamic>;
 
-      await _localStorage.saveAuthToken(token);
-      await _localStorage.saveUserId(userData['id'] as String);
-      await _localStorage.saveUserEmail(userData['email'] as String);
+    await _localStorage.saveAuthToken(token);
+    final rawId = userData['id'];
+    final userId = rawId is Map
+        ? (rawId['\$oid'] as String? ?? '')
+        : (rawId as String? ?? '');
+    await _localStorage.saveUserId(userId);
+    await _localStorage.saveUserEmail(userData['email'] as String);
 
-      if (response.containsKey('refresh_token')) {
-        await _localStorage
-            .saveRefreshToken(response['refresh_token'] as String);
-      }
-
-      return response; // ✅ Return full response including token & user
-    } on ApiException catch (e) {
-      if (e.statusCode == 401) {
-        throw Exception('Invalid email or password');
-      }
-      throw Exception('Login failed: ${e.message}');
-    } catch (e) {
-      throw Exception('Login failed: ${e.toString()}');
+    if (response.containsKey('refresh_token')) {
+      await _localStorage.saveRefreshToken(response['refresh_token'] as String);
     }
+
+    return response;
   }
 
   @override
@@ -49,43 +40,32 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String email,
     required String password,
   }) async {
-    try {
-      final response = await _apiClient.post(
-        '/register',
-        {
-          'username': username,
-          'email': email,
-          'password': password,
-        },
-        requiresAuth: false,
-      );
+    final response = await _apiClient.post(
+      '/register',
+      {'username': username, 'email': email, 'password': password},
+      requiresAuth: false,
+    );
 
-      if (response.containsKey('token')) {
-        final token = response['token'] as String;
-        await _localStorage.saveAuthToken(token);
-
-        if (response.containsKey('user')) {
-          final userData = response['user'] as Map<String, dynamic>;
-          await _localStorage.saveUserId(userData['id'] as String);
-          await _localStorage.saveUserEmail(userData['email'] as String);
-        }
-
-        return token;
+    if (response.containsKey('token')) {
+      final token = response['token'] as String;
+      await _localStorage.saveAuthToken(token);
+      if (response.containsKey('user')) {
+        final userData = response['user'] as Map<String, dynamic>;
+        final rawId = userData['id'];
+        final userId = rawId is Map
+            ? (rawId['\$oid'] as String? ?? '')
+            : (rawId as String? ?? '');
+        await _localStorage.saveUserId(userId);
+        await _localStorage.saveUserEmail(userData['email'] as String);
       }
-
-      if (response['message'] == 'User registered successfully') {
-        return 'registration_successful';
-      }
-
-      throw Exception('Unexpected response format');
-    } on ApiException catch (e) {
-      if (e.statusCode == 409) {
-        throw Exception('Email already exists');
-      }
-      throw Exception('Registration failed: ${e.message}');
-    } catch (e) {
-      throw Exception('Registration failed: ${e.toString()}');
+      return token;
     }
+
+    if (response['message'] == 'User registered successfully') {
+      return 'registration_successful';
+    }
+
+    throw ApiException(statusCode: 500, message: 'Unexpected response format');
   }
 
   @override

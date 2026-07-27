@@ -11,9 +11,7 @@ class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   Future<void> _logout(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-
+    context.read<LoginCubit>().logout();
     Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
   }
 

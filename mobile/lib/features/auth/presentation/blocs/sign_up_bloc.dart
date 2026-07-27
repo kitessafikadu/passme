@@ -13,6 +13,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
 
   SignUpBloc(this.signUpUseCase) : super(SignUpInitial()) {
     on<SignUpSubmitted>(_onSignUpSubmitted);
+    on<SignUpReset>((event, emit) => emit(SignUpInitial()));
   }
 
   Future<void> _onSignUpSubmitted(
@@ -37,16 +38,16 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
 
   String _mapFailureToMessage(Failure failure) {
     if (failure is NetworkFailure) return 'No internet connection';
-    // Use the actual message from the failure (e.g. "Email already exists",
-    // "Username already taken") rather than a generic fallback
     if (failure is ServerFailure && failure.message.isNotEmpty) {
       String message = failure.message;
-      // Strip Exception/ApiException wrapper noise
-      if (message.contains('Exception:')) {
+      while (message.contains('Exception:')) {
         message = message.split('Exception:').last.trim();
       }
       if (message.contains('(Status')) {
         message = message.substring(0, message.indexOf('(Status')).trim();
+      }
+      if (message.contains('\nResponse:')) {
+        message = message.substring(0, message.indexOf('\nResponse:')).trim();
       }
       return message;
     }

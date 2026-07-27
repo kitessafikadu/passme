@@ -7,6 +7,10 @@ abstract class SignUpEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class SignUpReset extends SignUpEvent {
+  const SignUpReset();
+}
+
 class SignUpSubmitted extends SignUpEvent {
   final String username;
   final String email;

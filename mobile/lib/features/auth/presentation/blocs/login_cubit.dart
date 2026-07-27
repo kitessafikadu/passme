@@ -34,13 +34,14 @@ class LoginState {
   LoginState copyWith({
     bool? isLoading,
     String? error,
+    bool clearError = false,
     String? token,
     String? username,
     String? email,
   }) {
     return LoginState(
       isLoading: isLoading ?? this.isLoading,
-      error: error ?? this.error,
+      error: clearError ? null : (error ?? this.error),
       token: token ?? this.token,
       username: username ?? this.username,
       email: email ?? this.email,
@@ -58,22 +59,13 @@ class LoginCubit extends Cubit<LoginState> {
   }) : super(LoginState.initial());
 
   Future<void> login(String email, String password) async {
-    emit(state.copyWith(isLoading: true, error: null));
+    emit(state.copyWith(isLoading: true, clearError: true));
     try {
       final result = await loginUser(email, password);
 
       result.fold(
         (failure) {
-          // Extract just the human-readable message from the failure
-          String message = failure.message;
-          // Strip any Exception/ApiException wrapper noise
-          if (message.contains('Exception:')) {
-            message = message.split('Exception:').last.trim();
-          }
-          if (message.contains('(Status')) {
-            message = message.substring(0, message.indexOf('(Status')).trim();
-          }
-          emit(state.copyWith(isLoading: false, error: message));
+          emit(state.copyWith(isLoading: false, error: failure.message));
         },
         (user) async {
           final token = user.token;
@@ -97,6 +89,10 @@ class LoginCubit extends Cubit<LoginState> {
 
   Future<void> logout() async {
     await localStorageService.clearAllUserData();
+    emit(LoginState.initial());
+  }
+
+  void reset() {
     emit(LoginState.initial());
   }
 
