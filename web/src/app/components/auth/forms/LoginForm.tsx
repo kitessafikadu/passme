@@ -34,11 +34,13 @@ const LoginForm: React.FC = () => {
     setIsSubmitting(false);
 
     if (result?.error) {
-      // next-auth wraps thrown errors as "CredentialsSignin" in older versions
-      // but the actual message comes through in result.error for thrown Errors
-      const msg = result.error === "CredentialsSignin"
-        ? "Invalid email or password"
-        : result.error;
+      // When authorize() throws new Error(msg), NextAuth v4 passes the message
+      // through result.error directly. "CredentialsSignin" is the fallback
+      // when null is returned instead of throwing.
+      const msg =
+        result.error === "CredentialsSignin" || result.error === "AccessDenied"
+          ? "Invalid email or password"
+          : result.error;
       setAuthError(msg);
     } else {
       router.push("/dashboard");

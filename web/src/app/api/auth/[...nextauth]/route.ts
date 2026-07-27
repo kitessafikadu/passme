@@ -9,6 +9,11 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: 'jwt' },
 
+  pages: {
+    signIn: '/auth/login',
+    error: '/auth/login',   // redirect auth errors back to login page, not NextAuth's error page
+  },
+
   providers: [
     CredentialsProvider({
       name: 'Credentials',
