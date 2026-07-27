@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: passme-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: MONGO_URI
+        sync: false
