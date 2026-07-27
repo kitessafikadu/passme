@@ -1,4 +1,5 @@
 # Web
+web/.env
 web/node_modules
 
 # Mobile - Miscellaneous

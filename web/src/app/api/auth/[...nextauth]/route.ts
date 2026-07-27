@@ -26,7 +26,16 @@ export const authOptions: NextAuthOptions = {
         );
 
         const { data, error } = result as { data?: AuthResponse; error?: any };
-        if (error || !data) return null;
+
+        if (error || !data) {
+          // Surface the actual backend error message so the UI can display it
+          const message =
+            error?.data?.error ||
+            error?.data?.message ||
+            error?.error ||
+            "Invalid email or password";
+          throw new Error(message);
+        }
 
         const { user, token } = data;
         return {

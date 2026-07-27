@@ -64,7 +64,16 @@ class LoginCubit extends Cubit<LoginState> {
 
       result.fold(
         (failure) {
-          emit(state.copyWith(isLoading: false, error: failure.toString()));
+          // Extract just the human-readable message from the failure
+          String message = failure.message;
+          // Strip any Exception/ApiException wrapper noise
+          if (message.contains('Exception:')) {
+            message = message.split('Exception:').last.trim();
+          }
+          if (message.contains('(Status')) {
+            message = message.substring(0, message.indexOf('(Status')).trim();
+          }
+          emit(state.copyWith(isLoading: false, error: message));
         },
         (user) async {
           final token = user.token;

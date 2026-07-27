@@ -45,7 +45,7 @@ const SignupForm: React.FC = () => {
         router.push("/dashboard");
       }
     } catch (e: any) {
-      setAuthError(e.data?.message || e.message || "Registration failed");
+      setAuthError(e.data?.error || e.data?.message || e.message || "Registration failed");
     }
   };
 
@@ -112,6 +112,18 @@ const SignupForm: React.FC = () => {
             type={showPassword ? "text" : "password"}
             {...register("password", {
               required: "Password is required",
+              minLength: {
+                value: 8,
+                message: "Password must be at least 8 characters",
+              },
+              validate: {
+                hasUppercase: (v) =>
+                  /[A-Z]/.test(v) || "Must contain at least one uppercase letter",
+                hasNumber: (v) =>
+                  /[0-9]/.test(v) || "Must contain at least one number",
+                hasSpecial: (v) =>
+                  /[^A-Za-z0-9]/.test(v) || "Must contain at least one special character",
+              },
             })}
             placeholder="••••••••"
             className="w-full h-12 px-3 py-2 border border-violet-200 hover:border-[#424242] rounded-md opacity-70 placeholder:text-sm focus:outline-none"
@@ -159,7 +171,7 @@ const SignupForm: React.FC = () => {
           disabled={isRegistering}
           className="text-[13px] h-12 w-full bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
         >
-          {isRegistering ? "CREATIGN ACCOUNT ...." : "GET STARTED"}
+          {isRegistering ? "CREATING ACCOUNT..." : "GET STARTED"}
         </button>
       </form>
     </div>
