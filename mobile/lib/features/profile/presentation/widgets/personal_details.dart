@@ -23,29 +23,38 @@ class PersonalDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Center(
-          child: CircleAvatar(
-            radius: 35,
-            backgroundImage: AssetImage(imageUrl),
+        CircleAvatar(
+          radius: 35,
+          backgroundImage: AssetImage(imageUrl),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+              Text(
+                email,
+                style: GoogleFonts.roboto(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xFF6B7280),
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ],
           ),
         ),
-        const SizedBox(width: 20),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(name,
-                style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.white)),
-            Text(email,
-                style: GoogleFonts.roboto(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF6B7280)))
-          ],
-        ),
-        const Spacer(),
         IconButton(
           icon: const Icon(Icons.edit_outlined, color: Colors.white),
           onPressed: () {

@@ -14,8 +14,22 @@ class ProfileOption extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: leadingIcon,
-      title: Text(title, style: titleStyle ?? GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w400)),
-      trailing: trailingIcon,
+      title: Text(
+        title,
+        style: titleStyle ??
+            GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: trailingIcon != null
+          ? ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 120),
+              child: trailingIcon,
+            )
+          : null,
       onTap: onTap,
       contentPadding: EdgeInsets.zero,
     );
