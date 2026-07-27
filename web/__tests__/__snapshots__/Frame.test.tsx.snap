@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Frame Component matches snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="flex flex-col h-full w-full bg-[#1A1A1A] text-white"
+  >
+    <div
+      class="w-full flex justify-center py-4"
+    >
+      <img
+        alt="A2SV Translator Banner"
+        class="md:w-[400px] md:h-auto object-contain"
+        data-priority="true"
+        height="62"
+        src="/banner.png"
+        width="333"
+      />
+    </div>
+    <div
+      class="flex-1 flex flex-col items-center justify-center"
+    >
+      <div
+        class="relative overflow-hidden w-[48px] h-[48px] rounded-[8px] mb-8"
+      >
+        <img
+          alt="Messages icon"
+          class="object-cover"
+          height="48"
+          src="/messages.png"
+          style="filter: brightness(0) invert(1);"
+          width="48"
+        />
+      </div>
+      <p
+        class="font-normal text-white text-center max-w-[617px] text-[22px] leading-[30px]"
+      >
+        Translate anything, anytime, with ease. A2SV Translator breaks language barriers, making communication smooth, fast, and accessible for everyone.
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;

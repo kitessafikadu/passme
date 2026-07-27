@@ -1,0 +1,28 @@
+[
+    {
+      "id": 1,
+      "questionText": "What is the purpose of your visit ?",
+      "placeholder": "Type your answer "
+    },
+    {
+      "id": 2,
+      "questionText": "How long do you plan to stay ?",
+      "placeholder": "Type your answer "
+    },
+    {
+      "id": 3,
+      "questionText": "Where will you be staying ?",
+      "placeholder": "Type your answer "
+    },
+    {
+      "id": 4,
+      "questionText": "Do you have a return ticket ?",
+      "placeholder": "Type your answer "
+    },
+    {
+      "id": 5,
+      "questionText": "Who are you visiting or staying with ? ",
+      "placeholder": "Type your answer "
+    }
+  ]
+  

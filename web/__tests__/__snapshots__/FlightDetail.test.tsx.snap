@@ -1,0 +1,153 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FlightDetail Component matches snapshot when loading 1`] = `
+<DocumentFragment>
+  <div
+    class="flex-1 flex flex-col items-center h-full relative bg-[#1A1A1A] text-white"
+  >
+    <div
+      class="flex justify-center items-center py-4 sticky top-0 bg-[#1A1A1A] z-10"
+    >
+      <img
+        alt="A2SV Translator Banner"
+        class="md:w-[400px] md:h-auto object-contain"
+        data-priority="true"
+        height="62"
+        src="/banner.png"
+        width="333"
+      />
+    </div>
+    <p
+      class="text-gray-400"
+    >
+      Loading ...
+    </p>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`FlightDetail Component matches snapshot with data 1`] = `
+<DocumentFragment>
+  <div
+    class="flex-1 flex flex-col h-full bg-[#1A1A1A] text-white overflow-y-auto"
+  >
+    <div
+      class="flex justify-center items-center py-4 sticky top-0 bg-[#1A1A1A] z-10"
+    >
+      <img
+        alt="A2SV Translator Banner"
+        class="md:w-[400px] md:h-auto object-contain"
+        data-priority="true"
+        height="62"
+        src="/banner.png"
+        width="333"
+      />
+    </div>
+    <div
+      class="px-8 pb-20 relative"
+    >
+      <div
+        class="mb-8"
+      >
+        <span
+          class="text-gray-400 text-sm block mb-1"
+        >
+          Your date of flight
+        </span>
+        <div
+          class="bg-[#5D5D6D] text-white rounded-md p-3 w-[240px] flex justify-between items-center"
+        >
+          <span>
+            December 25, 2023
+          </span>
+        </div>
+      </div>
+      <div
+        class="max-w-3xl mx-auto flex flex-col space-y-4"
+      >
+        <div
+          class="flex flex-col space-y-4"
+        >
+          <div
+            class="flex flex-col max-w-md self-start space-y-1"
+          >
+            <span
+              class="text-sm text-gray-400"
+            >
+              Question:
+            </span>
+            <div
+              class="rounded-lg px-4 py-2 bg-[#26252A] text-sm whitespace-pre-wrap"
+            >
+              <p>
+                What documents do I need for my flight?
+              </p>
+            </div>
+          </div>
+          <div
+            class="flex flex-col max-w-md self-end space-y-1"
+          >
+            <span
+              class="text-sm text-green-100"
+            >
+              Answer:
+            </span>
+            <div
+              class="rounded-lg px-4 py-2 bg-[#323232] text-sm whitespace-pre-wrap"
+            >
+              <p>
+                You need your passport and boarding pass.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex flex-col space-y-4"
+        >
+          <div
+            class="flex flex-col max-w-md self-start space-y-1"
+          >
+            <span
+              class="text-sm text-gray-400"
+            >
+              Question:
+            </span>
+            <div
+              class="rounded-lg px-4 py-2 bg-[#26252A] text-sm whitespace-pre-wrap"
+            >
+              <p>
+                What time should I arrive at the airport?
+              </p>
+            </div>
+          </div>
+          <div
+            class="flex flex-col max-w-md self-end space-y-1"
+          >
+            <span
+              class="text-sm text-green-100"
+            >
+              Answer:
+            </span>
+            <div
+              class="rounded-lg px-4 py-2 bg-[#323232] text-sm whitespace-pre-wrap"
+            >
+              <p>
+                At least 2 hours before departure.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="fixed bottom-4 right-8"
+      >
+        <button
+          class="w-[227px] h-[61px] bg-[#3972FF] hover:bg-blue-600 text-white rounded-[10px] px-[65px] py-[8px] gap-[8px] flex items-center justify-center"
+        >
+          Use Chat
+        </button>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

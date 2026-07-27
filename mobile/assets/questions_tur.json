@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "questionText": "Ziyaretinizin amacı nedir?",
+    "placeholder": "Cevabınızı yazın"
+  },
+  {
+    "id": 2,
+    "questionText": "Ne kadar süre kalacaksınız?",
+    "placeholder": "Cevabınızı yazın"
+  },
+  {
+    "id": 3,
+    "questionText": "Nerede kalacaksınız?",
+    "placeholder": "Cevabınızı yazın"
+  },
+  {
+    "id": 4,
+    "questionText": "Dönüş biletiniz var mı?",
+    "placeholder": "Cevabınızı yazın"
+  },
+  {
+    "id": 5,
+    "questionText": "Kiminle görüşecek veya kalacaksınız?",
+    "placeholder": "Cevabınızı yazın"
+  }
+]
