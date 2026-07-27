@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/features/auth/presentation/blocs/sign_up_bloc.dart';
 import 'package:mobile/features/auth/presentation/pages/signup_pages.dart';
 import 'package:mobile/features/flight_info/presentation/blocs/flight_bloc.dart';
-// import 'package:mobile/features/flight_info/presentation/pages/translator_page.dart';
+import 'package:mobile/features/flight_info/presentation/pages/translator_page.dart';
 import 'package:mobile/features/chat/presentation/pages/translator_page.dart';
 import 'package:mobile/features/flight_info/presentation/pages/flight_empty_page.dart';
 import 'package:mobile/features/profile/presentation/pages/profile_page.dart';

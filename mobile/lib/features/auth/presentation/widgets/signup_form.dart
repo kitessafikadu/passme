@@ -208,8 +208,9 @@ class _SignUpFormState extends State<SignUpForm> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryColor,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(12),
                       ),
+                      elevation: 0,
                     ),
                     child: state is SignUpLoading
                         ? const CircularProgressIndicator(
@@ -269,21 +270,33 @@ class _InputField extends StatelessWidget {
       style: const TextStyle(color: AppColors.textColor),
       validator: validator,
       decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: AppColors.iconColor),
+        prefixIcon: Icon(icon, color: AppColors.iconColor, size: 20),
         hintText: hint,
-        hintStyle: TextStyle(color: AppColors.hintTextColor),
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppColors.iconColor, width: 1.5),
+        hintStyle: TextStyle(color: AppColors.hintTextColor, fontSize: 14),
+        filled: true,
+        fillColor: const Color(0xFF1E1E2E),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.white10),
         ),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppColors.primaryColor, width: 2.0),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.white10),
         ),
-        errorBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.red, width: 1.5),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.primaryColor, width: 1.5),
         ),
-        focusedErrorBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.red, width: 2.0),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red),
         ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red, width: 1.5),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
     );
   }

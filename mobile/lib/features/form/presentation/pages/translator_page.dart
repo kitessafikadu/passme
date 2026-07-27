@@ -43,6 +43,15 @@ class _TranslatorFormViewState extends State<_TranslatorFormView> {
   final TextEditingController _destinationNameController =
       TextEditingController();
   final Map<String, TextEditingController> _answerControllers = {};
+
+  @override
+  void initState() {
+    super.initState();
+    // Load questions for the default language on page open
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<FormBloc>().add(LoadQuestions(_selectedLanguage));
+    });
+  }
   String _getLanguage() {
     switch (_selectedLanguage) {
       case Language.english:
@@ -88,7 +97,7 @@ class _TranslatorFormViewState extends State<_TranslatorFormView> {
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: const Icon(Icons.chevron_left, size: 30),
           color: Colors.white,
           onPressed: () => Navigator.pop(context),
         ),
@@ -342,7 +351,7 @@ class _TranslatorFormViewState extends State<_TranslatorFormView> {
         },
       );
     }
-    return const SizedBox();
+    return const Center(child: CircularProgressIndicator());
   }
 
   Widget _buildSubmitButton(

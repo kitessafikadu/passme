@@ -168,10 +168,8 @@ class FlightDetailPage extends StatelessWidget {
                 color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700),
           ),
           leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.arrow_back_ios_rounded),
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.chevron_left, size: 30),
             color: Colors.white,
           ),
           backgroundColor: Colors.transparent),
