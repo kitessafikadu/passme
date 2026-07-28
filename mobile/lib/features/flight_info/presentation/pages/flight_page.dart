@@ -105,7 +105,7 @@ class _FlightPageState extends State<FlightPage> {
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 8),
           child: Text(
-            "Start by adding your travel info — origin, destination, reason, and more — so we can help you communicate clearly at your destination",
+            'Start by adding your travel info: origin, destination, reason, and more, so we can help you communicate clearly at your destination.',
             style: TextStyle(color: Colors.white70),
             textAlign: TextAlign.center,
           ),
@@ -280,57 +280,105 @@ class _FlightPageState extends State<FlightPage> {
 
   Widget _buildFilterSheet() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextField(
-            decoration: const InputDecoration(
-              labelText: "Filter From Country",
-              labelStyle: TextStyle(color: Colors.white70),
+          const Text(
+            'Filter flights',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
             ),
-            style: const TextStyle(color: Colors.white),
+          ),
+          const SizedBox(height: 20),
+          _buildFilterInput(
+            label: 'From country',
+            initialValue: filterFromCountry,
             onChanged: (value) {
               setState(() {
                 filterFromCountry = value;
               });
             },
           ),
-          TextField(
-            decoration: const InputDecoration(
-              labelText: "Filter To Country",
-              labelStyle: TextStyle(color: Colors.white70),
-            ),
-            style: const TextStyle(color: Colors.white),
+          const SizedBox(height: 16),
+          _buildFilterInput(
+            label: 'To country',
+            initialValue: filterToCountry,
             onChanged: (value) {
               setState(() {
                 filterToCountry = value;
               });
             },
           ),
-          DropdownButton<String>(
-            value: sortOption.isEmpty ? null : sortOption,
-            hint:
-                const Text("Sort By", style: TextStyle(color: Colors.white70)),
-            dropdownColor: Colors.grey[900],
-            items: const [
-              DropdownMenuItem(
-                value: 'title',
-                child: Text("Title", style: TextStyle(color: Colors.white)),
+          const SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E1E2E),
+              border: Border.all(color: const Color(0xFF676470)),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: sortOption.isEmpty ? null : sortOption,
+                isExpanded: true,
+                hint: const Text('Sort by', style: TextStyle(color: Colors.white70)),
+                dropdownColor: const Color(0xFF1E1E2E),
+                iconEnabledColor: Colors.white70,
+                items: const [
+                  DropdownMenuItem(
+                    value: 'title',
+                    child: Text('Title', style: TextStyle(color: Colors.white)),
+                  ),
+                  DropdownMenuItem(
+                    value: 'date',
+                    child: Text('Date', style: TextStyle(color: Colors.white)),
+                  ),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    sortOption = value ?? '';
+                  });
+                },
               ),
-              DropdownMenuItem(
-                value: 'date',
-                child: Text("Date", style: TextStyle(color: Colors.white)),
-              ),
-            ],
-            onChanged: (value) {
-              setState(() {
-                sortOption = value ?? '';
-              });
-            },
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildFilterInput({
+    required String label,
+    required String initialValue,
+    required ValueChanged<String> onChanged,
+  }) {
+    return TextFormField(
+      initialValue: initialValue,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: Colors.white70),
+        filled: true,
+        fillColor: const Color(0xFF1E1E2E),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFF676470)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFF676470)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Colors.blue),
+        ),
+      ),
+      onChanged: onChanged,
     );
   }
 }

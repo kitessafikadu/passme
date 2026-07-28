@@ -43,7 +43,7 @@ class _FlightEmptyPageState extends State<FlightEmptyPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 8),
             child: Text(
-              "Start by adding your travel info — origin, destination, reason, and more — so we can help you communicate clearly at your destination",
+              'Start by adding your travel info: origin, destination, reason, and more, so we can help you communicate clearly at your destination.',
               style: TextStyle(color: Colors.white70),
               textAlign: TextAlign.center,
             ),

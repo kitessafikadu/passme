@@ -123,17 +123,23 @@ class _TranslatorFormViewState extends State<_TranslatorFormView> {
           }
         },
         builder: (context, state) {
-          return Padding(
+          return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Language Selector
-                Text(
+                _buildLanguageSectionHeader(),
+                const SizedBox(height: 10),
+                Visibility(
+                  visible: false,
+                  child: Text(
                   _getLocalizedText("Choose language", "ቋንቋ ይምረጡ", "Dil seçin"),
                   style: const TextStyle(color: Colors.white),
                 ),
-                const SizedBox(height: 5),
+                  ),
+                ),
+                const SizedBox(height: 10),
                 _buildLanguageSelectors(context),
                 const SizedBox(height: 5),
                 _buildCountryInputColumn(
@@ -152,33 +158,81 @@ class _TranslatorFormViewState extends State<_TranslatorFormView> {
                   style: const TextStyle(color: Colors.grey),
                 ),
                 _buildDatePickerButton(context),
-                const SizedBox(height: 10),
+                const SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.message,
-                      color: Colors.white,
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF3972FF).withOpacity(0.18),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.question_answer_outlined,
+                        color: Color(0xFF3972FF),
+                        size: 22,
+                      ),
                     ),
-                    Text(
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
                       _getLocalizedText(
-                          "Common Airport questions ",
+                          "Common Airport Questions",
                           "በተለምዶ አየር መንገድ ላይ  የሚጠየቁ ጥያቄዎች",
                           "Genel Havaalanı Soruları"),
-                      style: TextStyle(color: Colors.white, fontSize: 16.0),
-                    )
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 10),
-                Text.rich(TextSpan()),
-                // Questions List
-                Expanded(child: _buildQuestionsList(context, state)),
+                const SizedBox(height: 16),
+                _buildQuestionsList(context, state),
+                const SizedBox(height: 32),
               ],
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildLanguageSectionHeader() {
+    return Row(
+      children: [
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: const Color(0xFF3972FF).withOpacity(0.18),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Icon(
+            Icons.language_outlined,
+            color: Color(0xFF3972FF),
+            size: 18,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Text(
+          _getLocalizedText(
+            'Choose Language',
+            'á‰‹áŠ•á‰‹ á‹­áˆáˆ¨áŒ¡',
+            'Dil seÃ§in',
+          ),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
     );
   }
 
@@ -231,21 +285,29 @@ class _TranslatorFormViewState extends State<_TranslatorFormView> {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              hintText: hint,
-              hintStyle: TextStyle(color: Colors.grey[600]),
+        TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: const TextStyle(color: Colors.white38),
+            filled: true,
+            fillColor: const Color(0xFF1E1E2E),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF676470)),
             ),
-            style: const TextStyle(fontSize: 16),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF676470)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Colors.blue),
+            ),
           ),
+          style: const TextStyle(fontSize: 16, color: Colors.white),
         ),
       ],
     );
@@ -308,6 +370,8 @@ class _TranslatorFormViewState extends State<_TranslatorFormView> {
       return Center(child: Text(state.message));
     } else if (state is QuestionsLoaded) {
       return ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: state.questions.length + 1,
         itemBuilder: (ctx, index) {
           if (index < state.questions.length) {
