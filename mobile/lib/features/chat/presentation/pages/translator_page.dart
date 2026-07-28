@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/core/theme/app_colors.dart';
 import 'package:mobile/features/chat/presentation/widget/answer_bubble.dart';
-import 'package:mobile/features/chat/presentation/widget/edit_input.dart';
 import 'package:mobile/features/chat/presentation/widget/question_bubble.dart';
 import '../widget/mic_button.dart';
 import 'package:mobile/features/flight_info/domain/entities/flight.dart';
@@ -74,11 +72,8 @@ class _TranslatorPageState extends State<TranslatorPage> {
 
   @override
   Widget build(BuildContext context) {
-    print("Flight in build method: $flight"); // Add this line
     List<Card> buildQuestionCards() {
-      return questionData.asMap().entries.map((entry) {
-        final index = entry.key;
-        final question = entry.value;
+      return questionData.map((question) {
 
         return Card(
           elevation: 0.0,
@@ -207,7 +202,7 @@ class _TranslatorPageState extends State<TranslatorPage> {
         },
         onRecordingChanged: (bool isRecording) {
           setState(() {
-            this.isListening = isRecording;
+            isListening = isRecording;
 
             if (isRecording) {
               // Add a placeholder question with isListening = true

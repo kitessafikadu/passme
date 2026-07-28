@@ -43,7 +43,7 @@ class SubmissionEntity {
   Map<String, dynamic> toMap() {
     return {
       'qa': qa.map((q) => q.toMap()).toList(),
-      'date': date.toIso8601String(),
+      'date': date.toUtc().toIso8601String(),
       'title': title,
       'from_country': from_country,
       'to_country': to_country,

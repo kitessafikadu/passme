@@ -61,9 +61,11 @@ class FormBloc extends Bloc<FormEvent, FormsSates> {
       await questionRepository.submitAnswers(event.submission);
       emit(SubmissionSuccess());
     } catch (e) {
-      emit(SubmissionFailure(
-        'Submission failed: ${e.toString()}',
-      ));
+      final rawMsg = e.toString();
+      final cleanMsg = rawMsg.startsWith('Exception: ')
+          ? rawMsg.substring(11)
+          : rawMsg;
+      emit(SubmissionFailure(cleanMsg));
       // Revert to loaded state after failure
       if (questions.isNotEmpty) {
         emit(QuestionsLoaded(questions));

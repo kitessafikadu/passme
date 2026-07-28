@@ -27,10 +27,10 @@ class SubmissionModel extends SubmissionEntity {
       'qa': qa
           .map((q) => {
                 'question': q.questionText,
-                'answer': q.answer,
+                'answer': q.answer ?? '',
               })
           .toList(),
-      'date': date.toIso8601String(),
+      'date': date.toUtc().toIso8601String(),
       'title': title,
       'from_country': from_country,
       'to_country': to_country,

@@ -3,14 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/features/form/presentation/blocs/form_bloc.dart';
 import 'package:mobile/features/form/presentation/widgets/question_card.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../core/network/api_client.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/language_selector.dart';
 import '../../../../injection_container.dart';
-import '../../data/datasource/question_remote_datasource.dart'
-    show QuestionRemoteDataSourceImpl;
 
 import '../../domain/entites/Submission_entity.dart';
 import '../../domain/entites/question.dart';
@@ -134,9 +130,8 @@ class _TranslatorFormViewState extends State<_TranslatorFormView> {
                 Visibility(
                   visible: false,
                   child: Text(
-                  _getLocalizedText("Choose language", "ቋንቋ ይምረጡ", "Dil seçin"),
-                  style: const TextStyle(color: Colors.white),
-                ),
+                    _getLocalizedText("Choose language", "ቋንቋ ይምረጡ", "Dil seçin"),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -223,8 +218,8 @@ class _TranslatorFormViewState extends State<_TranslatorFormView> {
         Text(
           _getLocalizedText(
             'Choose Language',
-            'á‰‹áŠ•á‰‹ á‹­áˆáˆ¨áŒ¡',
-            'Dil seÃ§in',
+            'ቋንቋ ይምረጡ',
+            'Dil seçin',
           ),
           style: const TextStyle(
             color: Colors.white,
@@ -588,7 +583,7 @@ class _TranslatorFormViewState extends State<_TranslatorFormView> {
         context,
         _getLocalizedText(
             "Source and target languages cannot be the same",
-            "የመነሻ እና የመዳረሻ ቋንቋዎች መመሳሰል �ይለበትም",
+            "የመነሻ እና የመዳረሻ ቋንቋዎች መመሳሰል የለበትም",
             "Kaynak ve hedef diller aynı olamaz"),
       );
       return false;

@@ -46,8 +46,12 @@ class QuestionRemoteDataSourceImpl implements QuestionRemoteDataSource {
         if (e.statusCode == 401) {
           throw Exception('Session expired. Please login again.');
         } else if (e.statusCode == 400) {
-          throw Exception(
-              'Invalid request: ${e.response['message'] ?? 'Bad request'}');
+          final errorMsg = e.response is Map
+              ? (e.response['error'] ?? e.response['message'] ?? e.message)
+              : e.message;
+          throw Exception(errorMsg);
+        } else {
+          throw Exception(e.message);
         }
       }
       throw Exception('Submission failed: ${e.toString()}');
