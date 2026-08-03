@@ -2,19 +2,31 @@ import { useForm, Controller } from "react-hook-form";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useSession } from "next-auth/react";
-import { useCreateFlightMutation } from "@/app/services/flightsApi";
+import {
+  useCreateFlightMutation,
+  type FlightRequest,
+} from "@/app/services/flightsApi";
 import turkishquestions from "../../../../turkish";
 import flight from "../../../../flight";
 import { Translations } from "../../../../flight";
 
+type QuestionMap = Record<number, string>;
+
+interface FlightFormValues {
+  flightName: string;
+  flightOrigin: string;
+  flightDestination: string;
+  flightDate: string | null;
+  [key: string]: string | null;
+}
 
 interface FormComponentProps {
-  questions: any;
-  questionsAmharic: any;
-  handleedit: (data: any) => void;
-  handlethepop: (data: any) => void;
+  questions: QuestionMap;
+  questionsAmharic: QuestionMap;
+  handleedit: (data: unknown) => void;
+  handlethepop: (data: unknown) => void;
   popup: boolean;
-  lanaguage: string;
+  lanaguage: keyof Translations;
   setPopup: (value: boolean) => void;
 }
 
@@ -24,19 +36,10 @@ const FormComponent: React.FC<FormComponentProps> = ({
   questionsAmharic,
   popup,
   setPopup,
-  handleedit,
-  handlethepop,
 }) => {
-  const { data: session, status } = useSession()
-  interface FormDefaultValues {
-    flightName: string;
-    flightOrigin: string;
-    flightDestination: string;
-    flightDate: null;
-    [key: string]: string | null;
-  }
+  const { data: session } = useSession();
 
-  const { control, handleSubmit, reset } = useForm<FormDefaultValues>({
+  const { control, handleSubmit, reset } = useForm<FlightFormValues>({
     shouldUnregister: true,
     defaultValues: {
       flightName: "",
@@ -45,21 +48,23 @@ const FormComponent: React.FC<FormComponentProps> = ({
       flightDate: null,
       ...(lanaguage === "english"
         ? Object.keys(questions).reduce<Record<string, string>>((acc, key) => {
-          const questionKey = questions[parseInt(key)];
-          acc[questionKey] = "";
-          return acc;
-        }, {})
-
-        : Object.keys(questionsAmharic).reduce<Record<string, string>>((acc, key) => {
-          const questionKey = questionsAmharic[parseInt(key)];
-          acc[questionKey] = "";
-          return acc;
-        }, {}))
-    }
+            const questionKey = questions[parseInt(key)];
+            acc[questionKey] = "";
+            return acc;
+          }, {})
+        : Object.keys(questionsAmharic).reduce<Record<string, string>>(
+            (acc, key) => {
+              const questionKey = questionsAmharic[parseInt(key)];
+              acc[questionKey] = "";
+              return acc;
+            },
+            {},
+          )),
+    },
   });
 
-  const [createFlight, { isLoading: isCreating }] = useCreateFlightMutation();
-  const onSubmitForm = async (data: any) => {
+  const [createFlight] = useCreateFlightMutation();
+  const onSubmitForm = async (data: FlightFormValues) => {
     const {
       flightName,
       flightOrigin,
@@ -70,39 +75,41 @@ const FormComponent: React.FC<FormComponentProps> = ({
 
     const qa = Object.entries(qaFields).map(([question, answer]) => ({
       question,
-      answer: (answer as string)
+      answer: answer ?? "",
     }));
 
     try {
-      await createFlight({
+      const payload: FlightRequest = {
         title: flightName,
         from_country: flightOrigin,
         to_country: flightDestination,
         date: flightDate,
-        // @ts-ignore
-        user_id: session?.user?.id ?? '',
+        user_id: session?.user?.id ?? "",
         language: lanaguage,
         qa,
-      }
-      ).unwrap();
+      };
+
+      await createFlight(payload).unwrap();
 
       setPopup(false);
       reset();
     } catch (err) {
-      console.error('Failed to create flight', err);
+      console.error("Failed to create flight", err);
     }
   };
 
-
-
-  const currentLang = (flight as Translations)[lanaguage as keyof Translations] || flight.english
+  const currentLang =
+    (flight as Translations)[lanaguage as keyof Translations] || flight.english;
 
   const triggerSubmit = handleSubmit(onSubmitForm);
-  const validateInputByLanguage = (input: string, language: string): boolean => {
+  const validateInputByLanguage = (
+    input: string,
+    language: string,
+  ): boolean => {
     const patterns: Record<string, RegExp> = {
-      "english": /^[a-zA-Z0-9\s.,!?@#$%^&*()_+=-]+$/, // English + special characters
-      "amharic": /^[\u1200-\u137F\s.,!?@#$%^&*()_+=-]+$/, // Amharic + special characters
-      "turkish": /^[a-zA-ZçÇğĞıİöÖşŞüÜ\s.,!?@#$%^&*()_+=-]+$/, // Turkish + special characters
+      english: /^[a-zA-Z0-9\s.,!?@#$%^&*()_+=-]+$/, // English + special characters
+      amharic: /^[\u1200-\u137F\s.,!?@#$%^&*()_+=-]+$/, // Amharic + special characters
+      turkish: /^[a-zA-ZçÇğĞıİöÖşŞüÜ\s.,!?@#$%^&*()_+=-]+$/, // Turkish + special characters
     };
 
     const pattern = patterns[language];
@@ -115,8 +122,10 @@ const FormComponent: React.FC<FormComponentProps> = ({
   };
 
   return (
-    <form onSubmit={(e) => e.preventDefault()} className="mx-auto w-[80%] md:w-[70%] mt-10 mb-8">
-
+    <form
+      onSubmit={(e) => e.preventDefault()}
+      className="mx-auto w-[80%] md:w-[70%] mt-10 mb-8"
+    >
       <h1 className="text-white text-[25px] md:mb-6 sm:m-0">
         {currentLang.flightDetails}
       </h1>
@@ -131,9 +140,9 @@ const FormComponent: React.FC<FormComponentProps> = ({
             control={control}
             rules={{
               required: currentLang.validation.Required,
-              validate: (value) => (
+              validate: (value) =>
                 validateInputByLanguage(value, lanaguage) ||
-                currentLang.validation.LettersOnly),
+                currentLang.validation.LettersOnly,
             }}
             render={({ field, fieldState: { error } }) => (
               <div className="relative px-2 py-4">
@@ -159,13 +168,11 @@ const FormComponent: React.FC<FormComponentProps> = ({
           <Controller
             name="flightOrigin"
             control={control}
-
             rules={{
               required: currentLang.validation.Required,
-              validate: (value) => (
+              validate: (value) =>
                 validateInputByLanguage(value, lanaguage) ||
-                currentLang.validation.LettersOnly),
-
+                currentLang.validation.LettersOnly,
             }}
             render={({ field, fieldState: { error } }) => (
               <div className="w-full relative px-2 py-4 ">
@@ -190,17 +197,15 @@ const FormComponent: React.FC<FormComponentProps> = ({
             control={control}
             rules={{
               required: currentLang.validation.Required,
-              validate: (value) => (
+              validate: (value) =>
                 validateInputByLanguage(value, lanaguage) ||
-                currentLang.validation.LettersOnly),
+                currentLang.validation.LettersOnly,
             }}
-
             render={({ field, fieldState: { error } }) => (
               <div className="relative md:mr-32 w-full px-2 py-4">
                 <input
                   {...field}
                   placeholder={currentLang.toCountryPlaceholder}
-
                   className="w-full h-[74px] px-4 py-4 rounded-[16px] bg-[#FFFFFF0D] text-white focus:outline-none transition-all duration-200"
                 />
                 {error && <p className="text-red-500 mt-2">{error.message}</p>}
@@ -226,14 +231,11 @@ const FormComponent: React.FC<FormComponentProps> = ({
             <div className="w-full  px-2 py-4">
               <ReactDatePicker
                 selected={field.value ? new Date(field.value) : null}
-
                 onChange={(date) => field.onChange(date?.toISOString())}
                 showTimeSelect
                 dateFormat="Pp"
                 wrapperClassName="w-full"
-                placeholderText={
-                  currentLang.flightDatePlaceholder
-                }
+                placeholderText={currentLang.flightDatePlaceholder}
                 className="w-full h-[74px] px-4 py-4 rounded-[16px] bg-[#FFFFFF0D] text-white focus:outline-none transition-all duration-200"
               />
             </div>
@@ -241,7 +243,9 @@ const FormComponent: React.FC<FormComponentProps> = ({
         />
       </div>
 
-      <h1 className="text-white text-[24px] mb-10">{currentLang.commonQuestions}</h1>
+      <h1 className="text-white text-[24px] mb-10">
+        {currentLang.commonQuestions}
+      </h1>
 
       {lanaguage === "english" &&
         Object.keys(questions).map((key) => (
@@ -269,7 +273,7 @@ const FormComponent: React.FC<FormComponentProps> = ({
                 <div className="px-2 py-4 h-[100px]">
                   <input
                     {...field}
-                    value={field.value || ''}
+                    value={field.value || ""}
                     placeholder="enter your answer"
                     className=" w-full min-w-full h-[74px] px-4 py-4 rounded-[16px] bg-[#FFFFFF0D] text-white focus:outline-none"
                   />
@@ -307,7 +311,7 @@ const FormComponent: React.FC<FormComponentProps> = ({
                 <div className="px-2 py-4">
                   <input
                     {...field}
-                    value={field.value || ''}
+                    value={field.value || ""}
                     placeholder="የአማርኛ ፊደል በመጠቀም ይሞሉ"
                     className="w-full min-w-full h-[74px] px-4 py-4 rounded-[16px] bg-[#FFFFFF0D] text-white focus:outline-none"
                   />
@@ -319,7 +323,6 @@ const FormComponent: React.FC<FormComponentProps> = ({
             />
           </div>
         ))}
-
 
       {lanaguage === "turkish" &&
         Object.keys(turkishquestions).map((key) => (
@@ -347,7 +350,7 @@ const FormComponent: React.FC<FormComponentProps> = ({
                 <div className="px-2 py-4">
                   <input
                     {...field}
-                    value={field.value || ''}
+                    value={field.value || ""}
                     placeholder="Türkçe karakterler kullanın"
                     className="w-full min-w-full h-[74px] px-4 py-4 rounded-[16px] bg-[#FFFFFF0D] text-white focus:outline-none"
                   />
@@ -364,7 +367,6 @@ const FormComponent: React.FC<FormComponentProps> = ({
         <button
           type="button"
           onClick={handlethepop}
-
           className=" mt-10 w-full md:w-[141px] h-[40px]
           pt-[4px] pr-[39px] pb-[4px] pl-[39px]
           gap-[8px]
@@ -374,7 +376,10 @@ const FormComponent: React.FC<FormComponentProps> = ({
           border-none
           font-sans text-[14px] bg-[#FFFFFF] hover:bg-[#F0F0F0] text-[#3972FF] border border-[#FFFFFF]"
         >
-          <p className="font-inter font-bold text-[18px] leading-[32px] tracking-normal text-center align-middle"> {currentLang.submitButton} </p>
+          <p className="font-inter font-bold text-[18px] leading-[32px] tracking-normal text-center align-middle">
+            {" "}
+            {currentLang.submitButton}{" "}
+          </p>
         </button>
       </div>
       {popup && (
@@ -404,7 +409,3 @@ const FormComponent: React.FC<FormComponentProps> = ({
 };
 
 export default FormComponent;
-
-
-
-

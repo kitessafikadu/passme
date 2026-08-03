@@ -1,65 +1,71 @@
-"use client"
-import { useState, useEffect, useRef } from "react"
-import ChatBubble, { type ChatItem } from "@/app/components/chatpage/ChatBubble"
-import Image from "next/image"
-import { useSearchParams } from "next/navigation"
-import AudioRecorder from "@/app/components/chatpage/AudioRecorder"
-import type { ChatResponse } from "@/app/services/chatApi"
+"use client";
+import { useState, useEffect, useRef } from "react";
+import ChatBubble, {
+  type ChatItem,
+} from "@/app/components/chatpage/ChatBubble";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import AudioRecorder from "@/app/components/chatpage/AudioRecorder";
+import type { ChatResponse } from "@/app/services/chatApi";
 
 // Storage key that includes the flightId to separate conversations
-const getStorageKey = (flightId: string) => `chat_history_${flightId || "default"}`
+const getStorageKey = (flightId: string) =>
+  `chat_history_${flightId || "default"}`;
 
 export default function ChatPage() {
-  const searchParams = useSearchParams()
-  const flightId = searchParams.get("flightId") ?? ""
+  const searchParams = useSearchParams();
+  const flightId = searchParams.get("flightId") ?? "";
 
-  const [chatData, setChatData] = useState<ChatItem[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [isStorageLoaded, setIsStorageLoaded] = useState(false)
+  const [chatData, setChatData] = useState<ChatItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isStorageLoaded, setIsStorageLoaded] = useState(false);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   // Load chat history from localStorage on initial mount
   useEffect(() => {
     try {
-      const storageKey = getStorageKey(flightId)
-      const savedChat = localStorage.getItem(storageKey)
+      const storageKey = getStorageKey(flightId);
+      const savedChat = localStorage.getItem(storageKey);
 
       if (savedChat) {
-        const parsedChat = JSON.parse(savedChat) as ChatItem[]
-        setChatData(parsedChat)
+        const parsedChat = JSON.parse(savedChat) as ChatItem[];
+        setChatData(parsedChat);
       }
     } catch (error) {
-      console.error("Error loading chat from localStorage:", error)
+      console.error("Error loading chat from localStorage:", error);
     } finally {
-      setIsStorageLoaded(true)
+      setIsStorageLoaded(true);
     }
-  }, [flightId])
+  }, [flightId]);
 
   // Save chat history to localStorage whenever it changes
   useEffect(() => {
     if (isStorageLoaded && chatData.length > 0) {
       try {
-        const storageKey = getStorageKey(flightId)
-        localStorage.setItem(storageKey, JSON.stringify(chatData))
+        const storageKey = getStorageKey(flightId);
+        localStorage.setItem(storageKey, JSON.stringify(chatData));
       } catch (error) {
-        console.error("Error saving chat to localStorage:", error)
+        console.error("Error saving chat to localStorage:", error);
       }
     }
-  }, [chatData, isStorageLoaded, flightId])
+  }, [chatData, isStorageLoaded, flightId]);
 
   // Scroll to bottom when chat data changes or loading state changes
   useEffect(() => {
-    scrollToBottom()
-  }, [chatData, isLoading])
+    scrollToBottom();
+  }, [chatData, isLoading]);
 
   const handleNewReply = (resp: ChatResponse) => {
-    console.log("resp", resp)
-    const baseId = chatData.length > 0 ? Math.max(...chatData.map((item) => item.id)) + 1 : 1
+    console.log("resp", resp);
+    const baseId =
+      chatData.length > 0
+        ? Math.max(...chatData.map((item) => item.id)) + 1
+        : 1;
 
     const items: ChatItem[] = [
       {
@@ -76,17 +82,17 @@ export default function ChatPage() {
         transliteration: resp.answer.pronounciation,
         audio: resp.audio,
       },
-    ]
-    console.log("items", items)
-    setChatData((prev) => [...prev, ...items])
-  }
+    ];
+    console.log("items", items);
+    setChatData((prev) => [...prev, ...items]);
+  };
 
   // Function to clear chat history
   const clearChatHistory = () => {
-    setChatData([])
-    const storageKey = getStorageKey(flightId)
-    localStorage.removeItem(storageKey)
-  }
+    setChatData([]);
+    const storageKey = getStorageKey(flightId);
+    localStorage.removeItem(storageKey);
+  };
 
   return (
     <div className="relative flex flex-col min-h-screen bg-[#1C1C1C] text-white">
@@ -116,7 +122,9 @@ export default function ChatPage() {
               <ChatBubble
                 key={chatItem.id}
                 chatItem={chatItem}
-                isLatest={chatItem.id === Math.max(...chatData.map((item) => item.id))}
+                isLatest={
+                  chatItem.id === Math.max(...chatData.map((item) => item.id))
+                }
               />
             ))}
             {isLoading && (
@@ -215,8 +223,10 @@ export default function ChatPage() {
                   />
                 </div>
                 <p className="text-white align-center text-center max-w-[617px] text-[15px] md:text-[18px]">
-                  When you're ready, tap Record to capture the question you'll ask, tap Record again to stop and
-                  retrieve the AI's answer, then confidently record your own response to that generated reply.
+                  When you&apos;re ready, tap Record to capture the question
+                  you&apos;ll ask, tap Record again to stop and retrieve the
+                  AI&apos;s answer, then confidently record your own response to
+                  that generated reply.
                 </p>
               </>
             )}
@@ -224,7 +234,11 @@ export default function ChatPage() {
         )}
       </main>
 
-      <AudioRecorder flightId={flightId} onNewReply={handleNewReply} setIsLoading={setIsLoading} />
+      <AudioRecorder
+        flightId={flightId}
+        onNewReply={handleNewReply}
+        setIsLoading={setIsLoading}
+      />
     </div>
-  )
+  );
 }

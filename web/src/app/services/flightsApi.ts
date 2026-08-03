@@ -1,5 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { getSession } from 'next-auth/react';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { getSession } from "next-auth/react";
 
 export interface QAItem {
   question: string;
@@ -21,75 +21,77 @@ export interface FlightResponse extends FlightRequest {
 }
 
 export const flightsApi = createApi({
-  reducerPath: 'flightsApi',
+  reducerPath: "flightsApi",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
     prepareHeaders: async (headers) => {
       const session = await getSession();
-      // @ts-ignore
       if (session?.accessToken) {
-        // @ts-ignore
-        headers.set('Authorization', `Bearer ${session.accessToken}`);
+        headers.set("Authorization", `Bearer ${session.accessToken}`);
       }
-      headers.set('Content-Type', 'application/json');
+      headers.set("Content-Type", "application/json");
       return headers;
     },
   }),
-  tagTypes: ['Flight'],
+  tagTypes: ["Flight"],
   endpoints: (builder) => ({
     getFlights: builder.query<FlightResponse[], void>({
-      query: () => '/flights',
+      query: () => "/flights",
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: 'Flight' as const, id })),
-              { type: 'Flight' as const, id: 'LIST' },
+              ...result.map(({ id }) => ({ type: "Flight" as const, id })),
+              { type: "Flight" as const, id: "LIST" },
             ]
-          : [{ type: 'Flight' as const, id: 'LIST' }],
+          : [{ type: "Flight" as const, id: "LIST" }],
     }),
 
     getFlight: builder.query<FlightResponse, string>({
       query: (id) => `/flights/${id}`,
-      providesTags: (_result, _error, id) => [{ type: 'Flight' as const, id }],
+      providesTags: (_result, _error, id) => [{ type: "Flight" as const, id }],
     }),
 
     createFlight: builder.mutation<FlightResponse, FlightRequest>({
       query: (flight) => ({
-        url: '/flights',
-        method: 'POST',
+        url: "/flights",
+        method: "POST",
         body: flight,
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         const patchResult = dispatch(
-          flightsApi.util.updateQueryData('getFlights', undefined, (draft) => {
-            draft.push({ id: 'temp-id', ...arg });
-          })
+          flightsApi.util.updateQueryData("getFlights", undefined, (draft) => {
+            draft.push({ id: "temp-id", ...arg });
+          }),
         );
         try {
           const { data } = await queryFulfilled;
           dispatch(
-            flightsApi.util.updateQueryData('getFlights', undefined, (draft) => {
-              const index = draft.findIndex((f) => f.id === 'temp-id');
-              if (index !== -1) draft[index] = data;
-            })
+            flightsApi.util.updateQueryData(
+              "getFlights",
+              undefined,
+              (draft) => {
+                const index = draft.findIndex((f) => f.id === "temp-id");
+                if (index !== -1) draft[index] = data;
+              },
+            ),
           );
         } catch {
           patchResult.undo();
         }
       },
-      invalidatesTags: [{ type: 'Flight' as const, id: 'LIST' }],
+      invalidatesTags: [{ type: "Flight" as const, id: "LIST" }],
     }),
 
     deleteFlight: builder.mutation<{ success: boolean }, string>({
       query: (id) => ({
         url: `/flights/${id}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
       async onQueryStarted(id, { dispatch, queryFulfilled }) {
         const patchResult = dispatch(
-          flightsApi.util.updateQueryData('getFlights', undefined, (draft) => {
+          flightsApi.util.updateQueryData("getFlights", undefined, (draft) => {
             return draft.filter((f) => f.id !== id);
-          })
+          }),
         );
         try {
           await queryFulfilled;
@@ -98,8 +100,8 @@ export const flightsApi = createApi({
         }
       },
       invalidatesTags: (result, error, id) => [
-        { type: 'Flight' as const, id },
-        { type: 'Flight' as const, id: 'LIST' },
+        { type: "Flight" as const, id },
+        { type: "Flight" as const, id: "LIST" },
       ],
     }),
   }),

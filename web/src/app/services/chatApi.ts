@@ -25,9 +25,7 @@ export const chatApi = createApi({
     baseUrl: process.env.NEXT_PUBLIC_FLASK_BACKEND_URL,
     prepareHeaders: async (headers) => {
       const session = await getSession();
-      // @ts-ignore
       if (session?.accessToken) {
-        // @ts-ignore
         headers.set("Authorization", `Bearer ${session.accessToken}`);
       }
       return headers;

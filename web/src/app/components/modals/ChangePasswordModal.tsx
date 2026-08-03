@@ -48,8 +48,9 @@ export default function ChangePasswordModal({
       setTimeout(() => {
         onClose();
       }, 2000);
-    } catch (err: any) {
-      setError(err.data?.message || "Failed to update password");
+    } catch (err: unknown) {
+      const error = err as { data?: { message?: string } };
+      setError(error.data?.message || "Failed to update password");
     }
   };
 

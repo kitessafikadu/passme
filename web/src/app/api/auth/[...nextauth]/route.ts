@@ -30,7 +30,16 @@ const authOptions: NextAuthOptions = {
           }),
         );
 
-        const { data, error } = result as { data?: AuthResponse; error?: any };
+        const { data, error } = result as {
+          data?: AuthResponse;
+          error?: {
+            data?: {
+              error?: string;
+              message?: string;
+            };
+            error?: string;
+          };
+        };
 
         if (error || !data) {
           // Surface the actual backend error message so the UI can display it
@@ -47,6 +56,7 @@ const authOptions: NextAuthOptions = {
           id: user.id,
           name: user.username,
           email: user.email,
+          username: user.username,
           accessToken: token,
         };
       },
@@ -57,20 +67,18 @@ const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user && "accessToken" in user) {
         token.accessToken = user.accessToken;
+        token.username = user.username;
       }
       return token;
     },
 
     async session({ session, token }) {
       session.user = {
-        ...session.user!,
-        // @ts-ignore
+        ...session.user,
         id: token.sub as string,
-        // @ts-ignore
-        username: token.username as string,
+        username: token.username ?? undefined,
       };
-      // @ts-ignore
-      session.accessToken = token.accessToken as string;
+      session.accessToken = token.accessToken;
       return session;
     },
   },

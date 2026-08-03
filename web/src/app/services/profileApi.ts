@@ -23,9 +23,7 @@ export const profileApi = createApi({
     baseUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
     prepareHeaders: async (headers) => {
       const session = await getSession();
-      // @ts-ignore
       if (session?.accessToken) {
-        // @ts-ignore
         headers.set("Authorization", `Bearer ${session.accessToken}`);
       }
       headers.set("Content-Type", "application/json");
@@ -53,7 +51,7 @@ export const profileApi = createApi({
         const patchResult = dispatch(
           profileApi.util.updateQueryData("getProfile", undefined, (draft) => {
             draft.username = arg.new_username;
-          })
+          }),
         );
         try {
           await queryFulfilled;

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 interface FormValues {
   fullName: string;
-  email:    string;
+  email: string;
   password: string;
 }
 
@@ -27,15 +27,15 @@ const SignupForm: React.FC = () => {
     setAuthError(null);
 
     try {
-      const res = await registerUser({
-        username:     data.fullName,
-        email:    data.email,
+      await registerUser({
+        username: data.fullName,
+        email: data.email,
         password: data.password,
       }).unwrap();
 
       const signin = await signIn("credentials", {
         redirect: false,
-        email:    data.email,
+        email: data.email,
         password: data.password,
       });
 
@@ -44,8 +44,17 @@ const SignupForm: React.FC = () => {
       } else {
         router.push("/dashboard");
       }
-    } catch (e: any) {
-      setAuthError(e.data?.error || e.data?.message || e.message || "Registration failed");
+    } catch (e: unknown) {
+      const error = e as {
+        data?: { error?: string; message?: string };
+        message?: string;
+      };
+      setAuthError(
+        error.data?.error ||
+          error.data?.message ||
+          error.message ||
+          "Registration failed",
+      );
     }
   };
 
@@ -118,11 +127,13 @@ const SignupForm: React.FC = () => {
               },
               validate: {
                 hasUppercase: (v) =>
-                  /[A-Z]/.test(v) || "Must contain at least one uppercase letter",
+                  /[A-Z]/.test(v) ||
+                  "Must contain at least one uppercase letter",
                 hasNumber: (v) =>
                   /[0-9]/.test(v) || "Must contain at least one number",
                 hasSpecial: (v) =>
-                  /[^A-Za-z0-9]/.test(v) || "Must contain at least one special character",
+                  /[^A-Za-z0-9]/.test(v) ||
+                  "Must contain at least one special character",
               },
             })}
             placeholder="••••••••"
@@ -138,20 +149,48 @@ const SignupForm: React.FC = () => {
           >
             {showPassword ? (
               /* eye open */
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
               </svg>
             ) : (
               /* eye closed */
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
                   d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7
-                     a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M9.878 9.878l4.242 4.242M3 3l18 18" />
+                     a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9.878 9.878l4.242 4.242M3 3l18 18"
+                />
               </svg>
             )}
           </button>

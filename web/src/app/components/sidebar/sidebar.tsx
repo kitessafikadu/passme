@@ -11,7 +11,6 @@ import {
 import { useGetProfileQuery } from "@/app/services/profileApi";
 import ChangePasswordModal from "@/app/components/modals/ChangePasswordModal";
 import ChangeUsernameModal from "@/app/components/modals/ChangeUsernameModal";
-import AboutModal from "@/app/components/modals/AboutModal";
 
 interface Flight {
   id: string;
@@ -32,7 +31,7 @@ export default function Sidebar() {
       from_country,
       to_country,
       date,
-    })
+    }),
   );
   flights.reverse();
   const router = useRouter();
@@ -44,10 +43,8 @@ export default function Sidebar() {
   // Modal states
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showUsernameModal, setShowUsernameModal] = useState(false);
-  const {
-    data: profileData,
-    isLoading: isProfileLoading,
-  } = useGetProfileQuery();
+  const { data: profileData, isLoading: isProfileLoading } =
+    useGetProfileQuery();
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -192,18 +189,19 @@ export default function Sidebar() {
                       flexShrink: 0,
                     }}
                   >
-                    <Image src='/planeline.png' height={200} width={200} alt="Plange line"/>
+                    <Image
+                      src="/planeline.png"
+                      height={200}
+                      width={200}
+                      alt="Plange line"
+                    />
                   </div>
 
-                  <h3
-                    className="mb-4 text-center text-[20px] font-bold "
-                  >
+                  <h3 className="mb-4 text-center text-[20px] font-bold ">
                     No Flight Details Yet
                   </h3>
 
-                  <p
-                    className="max-w-[300px] text-center text-[14px] font-normal"
-                  >
+                  <p className="max-w-[300px] text-center text-[14px] font-normal">
                     Start by adding your travel info — origin, destination,
                     reason, and more — so we can help you communicate clearly at
                     your destination
@@ -216,8 +214,9 @@ export default function Sidebar() {
                   <div
                     key={flight.id}
                     onClick={() => handleSelectFlight(flight.id)}
-                    className={`flex flex-col items-center py-2 px-4 w-full max-w-[95%] self-stretch cursor-pointer rounded-lg transition-colors ${flight.id === selectedFlightId ? "bg-[#3150E0]" : ""
-                      }`}
+                    className={`flex flex-col items-center py-2 px-4 w-full max-w-[95%] self-stretch cursor-pointer rounded-lg transition-colors ${
+                      flight.id === selectedFlightId ? "bg-[#3150E0]" : ""
+                    }`}
                   >
                     <div className="flex w-full items-center justify-between">
                       {/* Left side: message icon and text */}
@@ -285,7 +284,7 @@ export default function Sidebar() {
         <div className="flex flex-col items-start gap-[4px] self-stretch p-5 border-t border-white/10">
           {/* Get the App */}
           <button
-            onClick={() => { }}
+            onClick={() => {}}
             className="flex items-center w-full py-3 hover:bg-[#2A2A2A] transition-colors"
           >
             <Image

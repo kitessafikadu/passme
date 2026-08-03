@@ -1,163 +1,178 @@
-"use client"
-import { useState, useEffect } from "react"
-import type React from "react"
+"use client";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type React from "react";
 
-import { useSendManualAnswerMutation } from "@/app/services/manualChatApi"
-import { Send, Volume2, Check, X, Edit2 } from "lucide-react"
+import { useSendManualAnswerMutation } from "@/app/services/manualChatApi";
+import { Send, Volume2, Check, X } from "lucide-react";
 
 export interface ChatItem {
-  id: number
-  role: "question" | "answer"
-  text: string
-  translation: string
-  transliteration?: string
-  audio?: string
+  id: number;
+  role: "question" | "answer";
+  text: string;
+  translation: string;
+  transliteration?: string;
+  audio?: string;
 }
 
 interface ChatBubbleProps {
-  chatItem: ChatItem
-  isLatest?: boolean
+  chatItem: ChatItem;
+  isLatest?: boolean;
 }
 
-const ChatBubble: React.FC<ChatBubbleProps> = ({ chatItem, isLatest = false }) => {
-  const isQuestion = chatItem.role === "question"
+const ChatBubble: React.FC<ChatBubbleProps> = ({
+  chatItem,
+  isLatest = false,
+}) => {
+  const isQuestion = chatItem.role === "question";
 
-  const [approved, setApproved] = useState(!isLatest)
-  const [isEditing, setIsEditing] = useState(false)
-  const [customAnswer, setCustomAnswer] = useState("")
+  const [approved, setApproved] = useState(!isLatest);
+  const [isEditing, setIsEditing] = useState(false);
+  const [customAnswer, setCustomAnswer] = useState("");
 
-  const [userAnswer, setUserAnswer] = useState<string | null>(null)
-  const [translatedAnswer, setTranslatedAnswer] = useState<string>(chatItem.translation || "")
-  const [pronounciationAnswer, setPronounciationAnswer] = useState<string>("")
+  const [userAnswer, setUserAnswer] = useState<string | null>(null);
+  const [translatedAnswer, setTranslatedAnswer] = useState<string>(
+    chatItem.translation || "",
+  );
+  const [pronounciationAnswer, setPronounciationAnswer] = useState<string>("");
 
-  const [audioUrl, setAudioUrl] = useState<string | null>(null)
-  const [customAudioUrl, setCustomAudioUrl] = useState<string | null>(null)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null)
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [customAudioUrl, setCustomAudioUrl] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioElementRef = useRef<HTMLAudioElement | null>(null);
 
-  const [sendManualAnswer, { isLoading: isTranslating }] = useSendManualAnswerMutation()
+  const [sendManualAnswer, { isLoading: isTranslating }] =
+    useSendManualAnswerMutation();
+
+  const convertBase64ToBlob = useCallback(
+    (base64: string, setAsCustom = false) => {
+      try {
+        const base64ToBlob = (base64Data: string, mimeType = "audio/mp3") => {
+          const byteCharacters = atob(base64Data);
+          const byteArrays = [];
+
+          for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+            const slice = byteCharacters.slice(offset, offset + 512);
+
+            const byteNumbers = new Array(slice.length);
+            for (let i = 0; i < slice.length; i++) {
+              byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            const byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+          }
+
+          return new Blob(byteArrays, { type: mimeType });
+        };
+
+        const base64Data = base64.includes("base64,")
+          ? base64.split("base64,")[1]
+          : base64;
+
+        const blob = base64ToBlob(base64Data);
+        const url = URL.createObjectURL(blob);
+
+        if (setAsCustom) {
+          setCustomAudioUrl(url);
+        } else {
+          setAudioUrl(url);
+        }
+
+        if (audioElementRef.current) {
+          audioElementRef.current.src = url;
+        } else {
+          const audio = new Audio(url);
+          audio.onended = () => setIsPlaying(false);
+          audioElementRef.current = audio;
+        }
+
+        return url;
+      } catch (error) {
+        console.error("Error converting base64 to blob:", error);
+        return null;
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     if (chatItem.audio && !userAnswer) {
-      convertBase64ToBlob(chatItem.audio)
+      convertBase64ToBlob(chatItem.audio);
     }
+  }, [chatItem.audio, convertBase64ToBlob, userAnswer]);
+
+  useEffect(() => {
     return () => {
       if (audioUrl) {
-        URL.revokeObjectURL(audioUrl)
+        URL.revokeObjectURL(audioUrl);
       }
       if (customAudioUrl) {
-        URL.revokeObjectURL(customAudioUrl)
+        URL.revokeObjectURL(customAudioUrl);
       }
-      if (audioElement) {
-        audioElement.pause()
-        audioElement.src = ""
+      if (audioElementRef.current) {
+        audioElementRef.current.pause();
+        audioElementRef.current.src = "";
       }
-    }
-  }, [chatItem.audio])
-
-  const convertBase64ToBlob = (base64: string, setAsCustom = false) => {
-    try {
-      const base64ToBlob = (base64Data: string, mimeType = "audio/mp3") => {
-        const byteCharacters = atob(base64Data)
-        const byteArrays = []
-
-        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-          const slice = byteCharacters.slice(offset, offset + 512)
-
-          const byteNumbers = new Array(slice.length)
-          for (let i = 0; i < slice.length; i++) {
-            byteNumbers[i] = slice.charCodeAt(i)
-          }
-
-          const byteArray = new Uint8Array(byteNumbers)
-          byteArrays.push(byteArray)
-        }
-
-        return new Blob(byteArrays, { type: mimeType })
-      }
-
-      const base64Data = base64.includes("base64,") ? base64.split("base64,")[1] : base64
-
-      const blob = base64ToBlob(base64Data)
-      const url = URL.createObjectURL(blob)
-
-      if (setAsCustom) {
-        setCustomAudioUrl(url)
-      } else {
-        setAudioUrl(url)
-      }
-
-      if (audioElement) {
-        audioElement.src = url
-      } else {
-        const audio = new Audio(url)
-        audio.onended = () => setIsPlaying(false)
-        setAudioElement(audio)
-      }
-
-      return url
-    } catch (error) {
-      console.error("Error converting base64 to blob:", error)
-      return null
-    }
-  }
+    };
+  }, [audioUrl, customAudioUrl]);
 
   const handlePlayAudio = () => {
-    const currentAudioUrl = userAnswer ? customAudioUrl : audioUrl
+    const currentAudioUrl = userAnswer ? customAudioUrl : audioUrl;
 
-    if (!audioElement || !currentAudioUrl) return
+    if (!audioElementRef.current || !currentAudioUrl) return;
 
-    if (audioElement.src !== currentAudioUrl) {
-      audioElement.src = currentAudioUrl
+    if (audioElementRef.current.src !== currentAudioUrl) {
+      audioElementRef.current.src = currentAudioUrl;
     }
 
     if (isPlaying) {
-      audioElement.pause()
-      setIsPlaying(false)
+      audioElementRef.current.pause();
+      setIsPlaying(false);
     } else {
-      audioElement.play().catch((err) => {
-        console.error("Error playing audio:", err)
-      })
-      setIsPlaying(true)
+      audioElementRef.current.play().catch((err) => {
+        console.error("Error playing audio:", err);
+      });
+      setIsPlaying(true);
     }
-  }
+  };
 
   const handleApprove = () => {
-    setApproved(true)
-  }
+    setApproved(true);
+  };
 
   const handleReject = () => {
-    setIsEditing(true)
-  }
+    setIsEditing(true);
+  };
 
   const handleSubmitCustom = async () => {
-    const input = customAnswer.trim()
-    if (!input) return
+    const input = customAnswer.trim();
+    if (!input) return;
 
     try {
-      const response = await sendManualAnswer(input).unwrap()
-      setUserAnswer(input)
-      setTranslatedAnswer(response.translation)
-      setPronounciationAnswer(response.pronunciation)
+      const response = await sendManualAnswer(input).unwrap();
+      setUserAnswer(input);
+      setTranslatedAnswer(response.translation);
+      setPronounciationAnswer(response.pronunciation);
 
       if (response.audio) {
-        convertBase64ToBlob(response.audio, true)
+        convertBase64ToBlob(response.audio, true);
       }
 
-      setApproved(true)
-      console.log("Received response:", response)
+      setApproved(true);
+      console.log("Received response:", response);
     } catch (err) {
-      console.error("Error translating custom answer:", err)
+      console.error("Error translating custom answer:", err);
     } finally {
-      setIsEditing(false)
-      setCustomAnswer("")
+      setIsEditing(false);
+      setCustomAnswer("");
     }
-  }
+  };
 
-  const mainText = isQuestion ? chatItem.text : (userAnswer ?? chatItem.text)
-  const translationText = isQuestion ? chatItem.translation : translatedAnswer
+  const mainText = isQuestion ? chatItem.text : (userAnswer ?? chatItem.text);
+  const translationText = isQuestion ? chatItem.translation : translatedAnswer;
 
-  const shouldShowAudio = approved && !isQuestion && (audioUrl || customAudioUrl)
+  const shouldShowAudio =
+    approved && !isQuestion && (audioUrl || customAudioUrl);
 
   return (
     <div
@@ -166,7 +181,9 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ chatItem, isLatest = false }) =
       <div
         className={`${isEditing ? "rounded-t-lg" : "rounded-lg"} px-4 py-3 min-w-[250px] ${!isQuestion ? (isEditing ? "bg-[#4D65FF]" : "bg-[#323232]  ") : "bg-[#26252A]"} text-sm relative`}
       >
-        <span className={`text-sm mb-1 ${isQuestion ? "text-gray-400" : "text-green-100"}`}>
+        <span
+          className={`text-sm mb-1 ${isQuestion ? "text-gray-400" : "text-green-100"}`}
+        >
           {isQuestion ? "Question:" : "Answer:"}
         </span>
         <p className="whitespace-pre-wrap">{mainText}</p>
@@ -178,12 +195,14 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ chatItem, isLatest = false }) =
           </div>
         )}
 
-        {approved && !isQuestion && (pronounciationAnswer || chatItem.transliteration) && (
-          <div className="mt-2 text-blue-50">
-            <strong>Say:</strong>
-            <p>{pronounciationAnswer || chatItem.transliteration}</p>
-          </div>
-        )}
+        {approved &&
+          !isQuestion &&
+          (pronounciationAnswer || chatItem.transliteration) && (
+            <div className="mt-2 text-blue-50">
+              <strong>Say:</strong>
+              <p>{pronounciationAnswer || chatItem.transliteration}</p>
+            </div>
+          )}
 
         {shouldShowAudio && (
           <div className="mt-2 flex items-center gap-2">
@@ -265,7 +284,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ chatItem, isLatest = false }) =
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default ChatBubble
+export default ChatBubble;
