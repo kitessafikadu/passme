@@ -4,26 +4,27 @@ import Image from "next/image";
 import questions from "../../../../question";
 import questionsAmharic from "../../../../amharic";
 import FormComponent from "./FormComponent";
+import type { Translations } from "../../../../flight";
 // import {inter} from "@/app/libs/font";
 // import Link from 'next/link'
 
 const Mainpage = () => {
-  const [lanaguage, setLanaguage] = useState("amharic");
-  const [toLanguage, setToLanguage] = useState("english");
+  const [lanaguage, setLanaguage] = useState<keyof Translations>("amharic");
+  const [toLanguage, setToLanguage] = useState<keyof Translations>("english");
   const [popup, setPopup] = useState(false);
 
 
   const handleLangaugechange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const selectedLanguage = event.target.value;
+    const selectedLanguage = event.target.value as keyof Translations;
     setLanaguage(selectedLanguage);
     setToLanguage(selectedLanguage === "english" ? "amharic" : "english");
   };
   const handletoLangaugechange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const toLanguage = event.target.value;
+    const toLanguage = event.target.value as keyof Translations;
     setToLanguage(toLanguage);
     setLanaguage(toLanguage === "english" ? "amharic" : "english");
   };

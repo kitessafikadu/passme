@@ -36,6 +36,8 @@ const FormComponent: React.FC<FormComponentProps> = ({
   questionsAmharic,
   popup,
   setPopup,
+  handleedit,
+  handlethepop,
 }) => {
   const { data: session } = useSession();
 
@@ -83,7 +85,7 @@ const FormComponent: React.FC<FormComponentProps> = ({
         title: flightName,
         from_country: flightOrigin,
         to_country: flightDestination,
-        date: flightDate,
+        date: flightDate ?? "",
         user_id: session?.user?.id ?? "",
         language: lanaguage,
         qa,
