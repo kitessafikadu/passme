@@ -1,25 +1,25 @@
-import NextAuth, { NextAuthOptions } from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import { store } from '@/app/libs/store';
-import { authApi, AuthResponse } from '@/app/services/authApi';
+import NextAuth, { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { store } from "@/app/libs/store";
+import { authApi, AuthResponse } from "@/app/services/authApi";
 
 const { login } = authApi.endpoints;
 
-export const authOptions: NextAuthOptions = {
+const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
-  session: { strategy: 'jwt' },
+  session: { strategy: "jwt" },
 
   pages: {
-    signIn: '/auth/login',
-    error: '/auth/login',   // redirect auth errors back to login page, not NextAuth's error page
+    signIn: "/auth/login",
+    error: "/auth/login", // redirect auth errors back to login page, not NextAuth's error page
   },
 
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      name: "Credentials",
       credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials) return null;
@@ -27,7 +27,7 @@ export const authOptions: NextAuthOptions = {
           login.initiate({
             email: credentials.email,
             password: credentials.password,
-          })
+          }),
         );
 
         const { data, error } = result as { data?: AuthResponse; error?: any };
@@ -49,13 +49,13 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           accessToken: token,
         };
-      }
-    })
+      },
+    }),
   ],
 
   callbacks: {
     async jwt({ token, user }) {
-      if (user && 'accessToken' in user) {
+      if (user && "accessToken" in user) {
         token.accessToken = user.accessToken;
       }
       return token;
@@ -72,8 +72,8 @@ export const authOptions: NextAuthOptions = {
       // @ts-ignore
       session.accessToken = token.accessToken as string;
       return session;
-    }
-  }
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);

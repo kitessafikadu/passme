@@ -48,7 +48,8 @@ class _TranslatorPageState extends State<TranslatorPage> {
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
       // Check if scrolling is needed
-      if (_scrollController.position.maxScrollExtent > _scrollController.position.pixels) {
+      if (_scrollController.position.maxScrollExtent >
+          _scrollController.position.pixels) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
           duration: const Duration(milliseconds: 300),
@@ -74,7 +75,6 @@ class _TranslatorPageState extends State<TranslatorPage> {
   Widget build(BuildContext context) {
     List<Card> buildQuestionCards() {
       return questionData.map((question) {
-
         return Card(
           elevation: 0.0,
           clipBehavior: Clip.antiAlias,
@@ -138,7 +138,8 @@ class _TranslatorPageState extends State<TranslatorPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 45),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 45),
                   decoration: BoxDecoration(
                     color: const Color(0xFF676470),
                     borderRadius: BorderRadius.circular(6),
@@ -155,7 +156,8 @@ class _TranslatorPageState extends State<TranslatorPage> {
                 ),
                 const Icon(Icons.arrow_forward_rounded, color: Colors.white),
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 45),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 45),
                   decoration: BoxDecoration(
                     color: const Color(0xFF676470),
                     borderRadius: BorderRadius.circular(6),
@@ -184,40 +186,40 @@ class _TranslatorPageState extends State<TranslatorPage> {
         ),
       ),
       floatingActionButton: questionData.isNotEmpty &&
-          !(questionData.last["isAccepted"] ?? false) &&
-          !(questionData.last["isDeclined"] ?? false) &&
-          !(questionData.last["isListening"] ?? false)
+              !(questionData.last["isAccepted"] ?? false) &&
+              !(questionData.last["isDeclined"] ?? false) &&
+              !(questionData.last["isListening"] ?? false)
           ? null
           : MicButton(
-        flightId: flight?.id, // Pass the flight ID to MicButton
-        onAIResponse: (Map<String, dynamic> qa) {
-          setState(() {
-            // Remove the placeholder question if it exists
-            if (questionData.isNotEmpty) {
-              questionData.removeLast();
-            }
-            // Add the new question-answer pair
-            addQuestionAnswer(qa);
-          });
-        },
-        onRecordingChanged: (bool isRecording) {
-          setState(() {
-            isListening = isRecording;
+              flightId: flight?.id, // Pass the flight ID to MicButton
+              onAIResponse: (Map<String, dynamic> qa) {
+                setState(() {
+                  // Remove the placeholder question if it exists
+                  if (questionData.isNotEmpty) {
+                    questionData.removeLast();
+                  }
+                  // Add the new question-answer pair
+                  addQuestionAnswer(qa);
+                });
+              },
+              onRecordingChanged: (bool isRecording) {
+                setState(() {
+                  isListening = isRecording;
 
-            if (isRecording) {
-              // Add a placeholder question with isListening = true
-              questionData.add({
-                "question": {"main": "", "translated": ""},
-                "answer": {"main": "", "translation": ""},
-                "isListening": true,
-              });
-            } else if (questionData.isNotEmpty) {
-              // Update the last question's isListening to false
-              questionData.last["isListening"] = false;
-            }
-          });
-        },
-      ),
+                  if (isRecording) {
+                    // Add a placeholder question with isListening = true
+                    questionData.add({
+                      "question": {"main": "", "translated": ""},
+                      "answer": {"main": "", "translation": ""},
+                      "isListening": true,
+                    });
+                  } else if (questionData.isNotEmpty) {
+                    // Update the last question's isListening to false
+                    questionData.last["isListening"] = false;
+                  }
+                });
+              },
+            ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }

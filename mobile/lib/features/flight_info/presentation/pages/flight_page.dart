@@ -326,7 +326,8 @@ class _FlightPageState extends State<FlightPage> {
               child: DropdownButton<String>(
                 value: sortOption.isEmpty ? null : sortOption,
                 isExpanded: true,
-                hint: const Text('Sort by', style: TextStyle(color: Colors.white70)),
+                hint: const Text('Sort by',
+                    style: TextStyle(color: Colors.white70)),
                 dropdownColor: const Color(0xFF1E1E2E),
                 iconEnabledColor: Colors.white70,
                 items: const [
