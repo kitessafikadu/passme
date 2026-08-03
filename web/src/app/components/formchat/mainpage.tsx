@@ -13,16 +13,15 @@ const Mainpage = () => {
   const [toLanguage, setToLanguage] = useState<keyof Translations>("english");
   const [popup, setPopup] = useState(false);
 
-
   const handleLangaugechange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    event: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     const selectedLanguage = event.target.value as keyof Translations;
     setLanaguage(selectedLanguage);
     setToLanguage(selectedLanguage === "english" ? "amharic" : "english");
   };
   const handletoLangaugechange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    event: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     const toLanguage = event.target.value as keyof Translations;
     setToLanguage(toLanguage);
@@ -52,7 +51,6 @@ const Mainpage = () => {
               />
             </div>
           </div>
-
         </div>
       </div>
 
@@ -79,7 +77,8 @@ const Mainpage = () => {
             <select
               className="bg-neutral-500 text-white rounded min-w-30 md:min-w-50 max-w-50 h-10 text-center"
               value={toLanguage}
-              onChange={handletoLangaugechange} >
+              onChange={handletoLangaugechange}
+            >
               <option value="english">English</option>
             </select>
           </div>
