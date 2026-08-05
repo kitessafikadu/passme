@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import Sidebar from "../src/app/components/sidebar/Sidebar";
+import Sidebar from "../src/app/components/sidebar/sidebar";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
