@@ -4,8 +4,11 @@ import "./globals.css";
 import ClientProviders from "./ClientProviders";
 
 export const metadata: Metadata = {
-  title: "Pass Me",
+  title: "PassMe",
   description: "Airport interview helper webapp",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
